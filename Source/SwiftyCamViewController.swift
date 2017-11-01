@@ -101,6 +101,10 @@ open class SwiftyCamViewController: UIViewController {
 
 	public var videoQuality : VideoQuality       = .high
 
+    /// Front camera capture quality
+
+    public var frontVideoQuality : VideoQuality  = .high
+
 	/// Sets whether flash is enabled for photo and video capture
 
 	public var flashEnabled                      = false
@@ -624,20 +628,13 @@ open class SwiftyCamViewController: UIViewController {
 	}
 
 
-	// Front facing camera will always be set to VideoQuality.high
 	// If set video quality is not supported, videoQuality variable will be set to VideoQuality.high
 	/// Configure image quality preset
 
 	fileprivate func configureVideoPreset() {
-		if currentCamera == .front {
-			session.sessionPreset = videoInputPresetFromVideoQuality(quality: .high)
-		} else {
-			if session.canSetSessionPreset(videoInputPresetFromVideoQuality(quality: videoQuality)) {
-				session.sessionPreset = videoInputPresetFromVideoQuality(quality: videoQuality)
-			} else {
-				session.sessionPreset = videoInputPresetFromVideoQuality(quality: .high)
-			}
-		}
+        let quality: VideoQuality = currentCamera == .front ? frontVideoQuality : videoQuality
+        let preset = videoInputPresetFromVideoQuality(quality: quality)
+        session.sessionPreset = session.canSetSessionPreset(preset) ? preset : videoInputPresetFromVideoQuality(quality: .high)
 	}
 
 	/// Add Video Inputs
